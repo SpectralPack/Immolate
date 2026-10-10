@@ -1,5 +1,6 @@
 // Based on C++ program by 00001H and MathIsFun_
 #pragma OPENCL EXTENSION cl_khr_fp64 : enable
+#pragma OPENCL FP_CONTRACT OFF
 #ifndef GAME_VERSION
     #define VER1 1
     #define VER2 0
