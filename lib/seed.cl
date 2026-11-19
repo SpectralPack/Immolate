@@ -54,21 +54,22 @@ long s_tell(seed* s) {
     }
     return loc;
 }
-text s_to_string(seed* s) {
-    text str;
+void s_to_string(text *t,seed* s) {
     for (int i = 0; i < s->len; i++) {
-        str.str[i]=s_char_at(s, i);
+        t->str[t->len+i]=s_char_at(s, i);
     }
-    set_text_length(&str, s->len);
-    return str;
+    set_text_length(t, t->len+s->len);
+    return;
 }
 
 void s_print(seed* s) {
-    text s_str = s_to_string(s);
+    text s_str = t_new();
+    s_to_string(&s_str,s);
     printf("%s",s_str.str);
 }
 void s_print_rank(seed* s, long rank) {
-    text s_str = s_to_string(s);
+    text s_str = t_new();
+    s_to_string(&s_str,s);
     printf("%s (%li)\n",s_str.str,rank);
 }
 void s_next(seed* s) {

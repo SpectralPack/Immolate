@@ -78,86 +78,82 @@ typedef enum NodeType {
 } ntype;
 
 // String values for each node
-text type_str(int x) {
+void type_str(text *t, int x) {
     switch(x) {
-        case R_Joker_Common:             return init_text("Joker1", 6);
-        case R_Joker_Uncommon:           return init_text("Joker2", 6);
-        case R_Joker_Rare:               return init_text("Joker3", 6);
-        case R_Joker_Legendary:          return init_text("Joker4", 6);
-        case R_Joker_Rarity:             return init_text("rarity", 6);
-        case R_Joker_Edition:            return init_text("edi", 3);
-        case R_Misprint:                 return init_text("misprint", 8);
-        case R_Standard_Has_Enhancement: return init_text("stdset", 6);
-        case R_Enhancement:              return init_text("Enhanced", 8);
-        case R_Card:                     return init_text("front", 5);
-        case R_Standard_Edition:         return init_text("standard_edition", 16);
-        case R_Standard_Has_Seal:        return init_text("stdseal", 7);
-        case R_Standard_Seal:            return init_text("stdsealtype", 11);
-        case R_Shop_Pack:                return init_text("shop_pack", 9);
-        case R_Tarot:                    return init_text("Tarot", 5);
-        case R_Spectral:                 return init_text("Spectral", 8);
-        case R_Tags:                     return init_text("Tag", 3);
-        case R_Shuffle_New_Round:        return init_text("nr", 2);
-        case R_Card_Type:                return init_text("cdt", 3);
-        case R_Planet:                   return init_text("Planet", 6);
-        case R_Lucky_Mult:               return init_text("lucky_mult", 10);
-        case R_Lucky_Money:              return init_text("lucky_money", 11);
-        case R_Sigil:                    return init_text("sigil", 5);
-        case R_Ouija:                    return init_text("ouija", 5);
-        case R_Wheel_of_Fortune:         return init_text("wheel_of_fortune", 16);
-        case R_Gros_Michel:              return init_text("gros_michel", 11);
-        case R_Cavendish:                return init_text("cavendish", 9);
-        case R_Voucher:                  return init_text("Voucher", 7);
-        case R_Voucher_Tag:              return init_text("Voucher_fromtag", 15);
-        case R_Orbital_Tag:              return init_text("orbital", 7);
-        case R_Soul:                     return init_text("soul_", 5);
-        case R_Erratic:                  return init_text("erratic", 7);
-        case R_Eternal:                  return init_text("stake_shop_joker_eternal", 24);
-        case R_Perishable:               return init_text("ssjp", 4);
-        case R_Rental:                   return init_text("ssjr", 4);
-        case R_Eternal_Perishable:       return init_text("etperpoll", 9);
-        case R_Rental_Pack:              return init_text("packssjr", 8);
-        case R_Eternal_Perishable_Pack:  return init_text("packetper", 9);
-        case R_Boss:                     return init_text("boss", 4);
-        default:                         return init_text("", 0);
+        case R_Joker_Common:             append_or_init_text(t,"Joker1", 6); return;
+        case R_Joker_Uncommon:           append_or_init_text(t,"Joker2", 6); return;
+        case R_Joker_Rare:               append_or_init_text(t,"Joker3", 6); return;
+        case R_Joker_Legendary:          append_or_init_text(t,"Joker4", 6); return;
+        case R_Joker_Rarity:             append_or_init_text(t,"rarity", 6); return;
+        case R_Joker_Edition:            append_or_init_text(t,"edi", 3); return;
+        case R_Misprint:                 append_or_init_text(t,"misprint", 8); return;
+        case R_Standard_Has_Enhancement: append_or_init_text(t,"stdset", 6); return;
+        case R_Enhancement:              append_or_init_text(t,"Enhanced", 8); return;
+        case R_Card:                     append_or_init_text(t,"front", 5); return;
+        case R_Standard_Edition:         append_or_init_text(t,"standard_edition", 16); return;
+        case R_Standard_Has_Seal:        append_or_init_text(t,"stdseal", 7); return;
+        case R_Standard_Seal:            append_or_init_text(t,"stdsealtype", 11); return;
+        case R_Shop_Pack:                append_or_init_text(t,"shop_pack", 9); return;
+        case R_Tarot:                    append_or_init_text(t,"Tarot", 5); return;
+        case R_Spectral:                 append_or_init_text(t,"Spectral", 8); return;
+        case R_Tags:                     append_or_init_text(t,"Tag", 3); return;
+        case R_Shuffle_New_Round:        append_or_init_text(t,"nr", 2); return;
+        case R_Card_Type:                append_or_init_text(t,"cdt", 3); return;
+        case R_Planet:                   append_or_init_text(t,"Planet", 6); return;
+        case R_Lucky_Mult:               append_or_init_text(t,"lucky_mult", 10); return;
+        case R_Lucky_Money:              append_or_init_text(t,"lucky_money", 11); return;
+        case R_Sigil:                    append_or_init_text(t,"sigil", 5); return;
+        case R_Ouija:                    append_or_init_text(t,"ouija", 5); return;
+        case R_Wheel_of_Fortune:         append_or_init_text(t,"wheel_of_fortune", 16); return;
+        case R_Gros_Michel:              append_or_init_text(t,"gros_michel", 11); return;
+        case R_Cavendish:                append_or_init_text(t,"cavendish", 9); return;
+        case R_Voucher:                  append_or_init_text(t,"Voucher", 7); return;
+        case R_Voucher_Tag:              append_or_init_text(t,"Voucher_fromtag", 15); return;
+        case R_Orbital_Tag:              append_or_init_text(t,"orbital", 7); return;
+        case R_Soul:                     append_or_init_text(t,"soul_", 5); return;
+        case R_Erratic:                  append_or_init_text(t,"erratic", 7); return;
+        case R_Eternal:                  append_or_init_text(t,"stake_shop_joker_eternal", 24); return;
+        case R_Perishable:               append_or_init_text(t,"ssjp", 4); return;
+        case R_Rental:                   append_or_init_text(t,"ssjr", 4); return;
+        case R_Eternal_Perishable:       append_or_init_text(t,"etperpoll", 9); return;
+        case R_Rental_Pack:              append_or_init_text(t,"packssjr", 8); return;
+        case R_Eternal_Perishable_Pack:  append_or_init_text(t,"packetper", 9); return;
+        case R_Boss:                     append_or_init_text(t,"boss", 4); return;
+        default:                         append_or_init_text(t,"", 0); return;
     }
 }
-text source_str(int x) {
+void source_str(text *t, int x) {
     switch(x) {
-        case S_Shop:           return init_text("sho", 3);
-        case S_Emperor:        return init_text("emp", 3);
-        case S_High_Priestess: return init_text("pri", 3);
-        case S_Judgement:      return init_text("jud", 3);
-        case S_Wraith:         return init_text("wra", 3);
-        case S_Arcana:         return init_text("ar1", 3);
-        case S_Celestial:      return init_text("pl1", 3);
-        case S_Spectral:       return init_text("spe", 3);
-        case S_Standard:       return init_text("sta", 3);
-        case S_Buffoon:        return init_text("buf", 3);
-        case S_Vagabond:       return init_text("vag", 3);
-        case S_Superposition:  return init_text("sup", 3);
-        case S_8_Ball:         return init_text("8ba", 3);
-        case S_Seance:         return init_text("sea", 3);
-        case S_Sixth_Sense:    return init_text("sixth", 5);
-        case S_Top_Up:         return init_text("top", 3);
-        case S_Rare_Tag:       return init_text("rta", 3);
-        case S_Uncommon_Tag:   return init_text("uta", 3);
-        case S_Blue_Seal:      return init_text("blusl", 5);
-        case S_Purple_Seal:    return init_text("8ba", 3);
-        case S_Soul:           return init_text("sou", 3);
-        case S_Riff_Raff:      return init_text("rif", 3);
-        case S_Cartomancer:      return init_text("car", 3);
-        default:               return init_text("", 0);
+        case S_Shop:           append_or_init_text(t,"sho", 3); return;
+        case S_Emperor:        append_or_init_text(t,"emp", 3); return;
+        case S_High_Priestess: append_or_init_text(t,"pri", 3); return;
+        case S_Judgement:      append_or_init_text(t,"jud", 3); return;
+        case S_Wraith:         append_or_init_text(t,"wra", 3); return;
+        case S_Arcana:         append_or_init_text(t,"ar1", 3); return;
+        case S_Celestial:      append_or_init_text(t,"pl1", 3); return;
+        case S_Spectral:       append_or_init_text(t,"spe", 3); return;
+        case S_Standard:       append_or_init_text(t,"sta", 3); return;
+        case S_Buffoon:        append_or_init_text(t,"buf", 3); return;
+        case S_Vagabond:       append_or_init_text(t,"vag", 3); return;
+        case S_Superposition:  append_or_init_text(t,"sup", 3); return;
+        case S_8_Ball:         append_or_init_text(t,"8ba", 3); return;
+        case S_Seance:         append_or_init_text(t,"sea", 3); return;
+        case S_Sixth_Sense:    append_or_init_text(t,"sixth", 5); return;
+        case S_Top_Up:         append_or_init_text(t,"top", 3); return;
+        case S_Rare_Tag:       append_or_init_text(t,"rta", 3); return;
+        case S_Uncommon_Tag:   append_or_init_text(t,"uta", 3); return;
+        case S_Blue_Seal:      append_or_init_text(t,"blusl", 5); return;
+        case S_Purple_Seal:    append_or_init_text(t,"8ba", 3); return;
+        case S_Soul:           append_or_init_text(t,"sou", 3); return;
+        case S_Riff_Raff:      append_or_init_text(t,"rif", 3); return;
+        case S_Cartomancer:    append_or_init_text(t,"car", 3); return;
+        default:               append_or_init_text(t,"", 0); return;
     }
 }
-text resample_str(int x) {
-    if (x == 0) {
-        return init_text("", 0);
-    } else {
-        text str1 = init_text("_resample", 9);
-        text str2 = int_to_str(x+1);
-        return text_concat(str1, str2);
-    }
+void resample_str(text* t, int x) {
+    if (x == 0) return;
+    append_or_init_text(t,"_resample", 9);
+    int_to_str(t,x+1);
 }
 
 typedef struct RNGInfo {
@@ -177,12 +173,12 @@ typedef struct Cache {
     int nextFreeNode;
 } cache;
 
-text node_str(ntype nt, int x) {
+void node_str(text* t, ntype nt, int x) {
     switch (nt) {
-        case N_Type: return type_str(x);
-        case N_Source: return source_str(x);
-        case N_Ante: return int_to_str(x);
-        case N_Resample: return resample_str(x);
+        case N_Type: type_str(t,x); return;
+        case N_Source: source_str(t,x); return;
+        case N_Ante: int_to_str(t,x); return;
+        case N_Resample: resample_str(t,x); return;
     }
 }
 int init_node(cache* c, ntype nodeTypes[], int nodeValues[], int depth) {

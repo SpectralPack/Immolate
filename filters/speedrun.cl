@@ -8,7 +8,7 @@ long filter(instance* inst) {
     // Check for Bull
     bool foundBull = false;
     for (int i = 0; i < 2; i++) {
-        if (next_shop_item(inst, 2).value == Bull) foundBull = true;
+        if (next_shop_item_no_info_specific_type(inst, 2, ItemType_Joker).value == Bull) foundBull = true;
     }
     if (!foundBull) return 0;
 

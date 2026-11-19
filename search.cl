@@ -5,7 +5,8 @@ __kernel void search(char8 starting_seed, long num_seeds, __global long* filter_
         instance inst = i_new(_seed);
         long score = filter(&inst);
         if (score >= filter_cutoff[0]) {
-            text s_str = s_to_string(&_seed);
+            text s_str = t_new();
+            s_to_string(&s_str,&_seed);
             printf("%s (%li)\n", s_str.str, score);
             if (score > filter_cutoff[0]) {
                 #ifndef FIXED_FILTER_CUTOFF
