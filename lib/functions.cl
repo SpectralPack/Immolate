@@ -371,6 +371,61 @@ shopitem next_shop_item(instance* inst, int ante) {
     return nextShopItem;
 }
 
+shopitem next_shop_item_no_info(instance* inst, int ante) {
+    shop shopInstance = get_shop_instance(inst);
+
+    double card_type = random(inst, (__private ntype[]){N_Type, N_Ante}, (__private int[]){R_Card_Type, ante}, 2) * get_total_rate(shopInstance);
+    itemtype type = get_item_type(shopInstance, card_type);
+    item shopItem;
+    jokerdata shopJoker;
+    if (type == ItemType_Joker) {
+        shopJoker.joker = next_joker(inst, S_Shop, ante);
+        shopItem = shopJoker.joker;
+    } else if (type == ItemType_Tarot) {
+        shopItem = next_tarot(inst, S_Shop, ante, false);
+    } else if (type == ItemType_Planet) {
+        shopItem = next_planet(inst, S_Shop, ante, false);
+    } else if (type == ItemType_Spectral) {
+        shopItem = next_spectral(inst, S_Shop, ante, false);
+    } else if (type == ItemType_PlayingCard) {
+        // TODO: Playing card support.
+        shopItem = RETRY;
+    }
+
+    shopitem nextShopItem = {type, shopItem, shopJoker};
+    return nextShopItem;
+}
+
+shopitem next_shop_item_no_info_specific_type(instance* inst, int ante, itemtype type) {
+    shop shopInstance = get_shop_instance(inst);
+
+    double card_type = random(inst, (__private ntype[]){N_Type, N_Ante}, (__private int[]){R_Card_Type, ante}, 2) * get_total_rate(shopInstance);
+    itemtype next_type = get_item_type(shopInstance, card_type);
+    item shopItem;
+    jokerdata shopJoker;
+    if (next_type != type)
+    {
+        shopitem nextShopItem = {next_type, RETRY, shopJoker};
+        return nextShopItem;
+    }
+    if (next_type == ItemType_Joker) {
+        shopJoker.joker = next_joker(inst, S_Shop, ante);
+        shopItem = shopJoker.joker;
+    } else if (next_type == ItemType_Tarot) {
+        shopItem = next_tarot(inst, S_Shop, ante, false);
+    } else if (next_type == ItemType_Planet) {
+        shopItem = next_planet(inst, S_Shop, ante, false);
+    } else if (next_type == ItemType_Spectral) {
+        shopItem = next_spectral(inst, S_Shop, ante, false);
+    } else if (next_type == ItemType_PlayingCard) {
+        // TODO: Playing card support.
+        shopItem = RETRY;
+    }
+
+    shopitem nextShopItem = {next_type, shopItem, shopJoker};
+    return nextShopItem;
+}
+
 //Todo: Update for vouchers, add a general one for any type of card
 // Deprecated, use next_shop_item() ^
 item shop_joker(instance* inst, int ante) {

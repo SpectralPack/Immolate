@@ -19,11 +19,20 @@ typedef struct GameInstance {
     lrandom rng;
     bool locked[ITEMS_END];
     instance_params params;
+    double seedCache[TEXT_LENGTH];
 } instance;
 instance i_new(seed s) {
-    instance inst = {.locked = {true}};
+    instance inst;
+    // Set only what needs to be initialized
+    for (int i = 0; i < ITEMS_END; i++)
+        inst.locked[i] = false;
+    inst.locked[RETRY] = true;
+    for (int i = 0; i < TEXT_LENGTH; i++)
+        inst.seedCache[i] = 0;
     inst.seed = s;
-    inst.hashedSeed = pseudohash(s_to_string(&s));
+    text rvalue = t_new();
+    s_to_string(&rvalue,&s);
+    inst.hashedSeed = pseudohash(&rvalue);
     inst.rngCache.generatedFirstPack = false;
     inst.rngCache.nextFreeNode = 0;
     instance_params params = {
@@ -62,14 +71,22 @@ double get_node_child(instance* inst, ntype nts[], int ids[], int num) {
     }
     if (node_id == -1) {
         node_id = init_node(&(inst->rngCache),nts,ids,num);
-        text phvalue = node_str(nts[0],ids[0]);
+        text phvalue = t_new();
+        node_str(&phvalue,nts[0],ids[0]);
         for (int i = 1; i < num; i++) {
-            phvalue = text_concat(phvalue, node_str(nts[i],ids[i]));
+            node_str(&phvalue,nts[i],ids[i]);
         }
-        phvalue = text_concat(phvalue,s_to_string(&inst->seed));
-        inst->rngCache.nodes[node_id].rngState = pseudohash(phvalue);
+        // Calc just the sed part of the hash and store it for cache lookups
+        double seedHash = inst->seedCache[phvalue.len];
+        if (seedHash == 0) {
+            text seed_str = t_new();
+            s_to_string(&seed_str,&inst->seed);
+            seedHash = pseudohash_skip_length(&seed_str, phvalue.len);
+            inst->seedCache[phvalue.len] = seedHash;
+        }
+        inst->rngCache.nodes[node_id].rngState = pseudohash_skip_seed(&phvalue, seedHash);
     }
-    inst->rngCache.nodes[node_id].rngState = roundDigits(fract(inst->rngCache.nodes[node_id].rngState*1.72431234+2.134453429141),13);
+    inst->rngCache.nodes[node_id].rngState = roundDigits(fract(inst->rngCache.nodes[node_id].rngState*1.72431234+2.134453429141));
     return (inst->rngCache.nodes[node_id].rngState + inst->hashedSeed)/2;
 }
 double random(instance* inst, ntype nts[], int ids[], int num) {

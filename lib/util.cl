@@ -1,35 +1,48 @@
+#define TEXT_LENGTH 64
+#define PI_VALUE 3.141592653589793116
+#define HASH_CONSTANT 1.1239285023
 // Pseudohash
 typedef struct Text {
-    char str[256];
+    char str[TEXT_LENGTH];
     int len;
 } text;
 
-inline text init_text(__constant char* str, int len) {
+inline text t_new() {
     text t;
-    for (int i = 0; i < len; i++){
-        t.str[i] = str[i];
-    }
-    t.len = len;
-    t.str[t.len] = '\0';
+    t.len = 0;
     return t;
+}
+
+inline void init_text(text* t, __constant char* str, int len) {
+    for (int i = 0; i < len; i++){
+        t->str[i] = str[i];
+    }
+    t->len = len;
+    t->str[t->len] = '\0';
+    return;
 }
 inline void set_text_length(text* t, int len) {
     t->len = len;
     t->str[t->len] = '\0';
 }
 
-text text_concat(text a, text b) {
-    text temp = a;
-    for (int j = 0; j < b.len; j++) {
-        temp.str[a.len+j] = b.str[j];
+inline void append_or_init_text(text* t, __constant char* str, int len) {
+    for (int j = 0; j < len; j++) {
+        t->str[t->len+j] = str[j];
     }
-    set_text_length(&temp, temp.len+b.len);
-    return temp;
+    set_text_length(t, t->len+len);
 }
 
-void print_text(text x) {
-    for (int i = 0; i < x.len; i++) {
-        printf("%c",x.str[i]);
+inline void text_concat(text* a, text* b) {
+    for (int j = 0; j < b->len; j++) {
+        a->str[a->len+j] = b->str[j];
+    }
+    set_text_length(a, a->len+b->len);
+}
+
+void print_text(text* x) {
+    for (int i = 0; i < x->len; i++) {
+        printf("%c",x->str[i]);
     }
     printf("\n");
 }
@@ -38,16 +51,30 @@ double fract(double f) {
     return f-floor(f);
 }
 
-double pseudohash(text s) {
+double pseudohash(text* s) {
     double num = 1;
-    int k = 32; //determines size of left and right shifts...
-    for (int i = s.len - 1; i >= 0; i--) {
-        // Floating point addition is weird, so we have to make it have more room for error
-        long int_part = (1.1239285023/num*s.str[i]*3.141592653589793116+3.141592653589793116*(i+1))*(1<<k);
-        double fract_part = fract(fract((1.1239285023/num*s.str[i]*3.141592653589793116)*(1<<k))+fract((3.141592653589793116*(i+1))*(1<<k)));
-        num = fract(((double)(int_part)+fract_part)/(1<<k));
-        // What the original function would look like:
-        //num = fract(1.1239285023/num*s.str[i]*3.141592653589793116+3.141592653589793116*(i+1));
+    for (int i = s->len - 1; i >= 0; i--) {
+        // With OPENCL FP_CONTRACT OFF, we can use the original formula
+        num = fract(HASH_CONSTANT/num*s->str[i]*PI_VALUE+PI_VALUE*(i+1));
+    }
+    return num;
+}
+
+double pseudohash_skip_length(text* s, int length) {
+    // length give the length of what will be hashed
+    // and allows us to has the first part for caching
+    double num = 1;
+    for (int i = s->len - 1; i >= 0; i--) {
+        // With OPENCL FP_CONTRACT OFF, we can use the original formula
+        num = fract(HASH_CONSTANT/num*s->str[i]*PI_VALUE+PI_VALUE*(length+i+1));
+    }
+    return num;
+}
+
+double pseudohash_skip_seed(text* s, double num) {
+    for (int i = s->len - 1; i >= 0; i--) {
+        // With OPENCL FP_CONTRACT OFF, we can use the original formula
+        num = fract(HASH_CONSTANT/num*s->str[i]*PI_VALUE+PI_VALUE*(i+1));
     }
     return num;
 }
@@ -57,8 +84,8 @@ double pseudohash8(char8 s) {
     double num = 1;
     int k = 32;
     for (int i = 7; i >= 0; i--) {
-        long int_part = (1.1239285023/num*s[i]*3.141592653589793116+3.141592653589793116*(i+1))*(1<<k);
-        double fract_part = fract(fract((1.1239285023/num*s[i]*3.141592653589793116)*(1<<k))+fract((3.141592653589793116*(i+1))*(1<<k)));
+        long int_part = (HASH_CONSTANT/num*s[i]*PI_VALUE+PI_VALUE*(i+1))*(1<<k);
+        double fract_part = fract(fract((HASH_CONSTANT/num*s[i]*PI_VALUE)*(1<<k))+fract((PI_VALUE*(i+1))*(1<<k)));
         num = fract(((double)(int_part)+fract_part)/(1<<k));
     }
     return num;
@@ -71,9 +98,8 @@ unsigned int lsh32(unsigned int x, size_t l) {
 unsigned int rsh32(unsigned int x, size_t r) {
     return x>>r;
 }
-double roundDigits(double f, int d) {
-    double power = pow((double)10, d);
-    return round(f*power)/power;
+double roundDigits(double f) {
+    return round(f * 1e13) / 1e13;
 }
 
 double pseudohash_legacy(__constant char* s, size_t stringLen) {
@@ -93,7 +119,7 @@ double pseudohash_legacy(__constant char* s, size_t stringLen) {
             mask = mask^(lsh32(mask,7)+rsh32(mask,3)+s[i]);
         }
     }
-    return roundDigits(fract(sqrt((double)(abs(mask)))),13);
+    return roundDigits(fract(sqrt((double)(abs(mask)))));
 }
 
 double c16_pseudohash_legacy(char16 s) {
@@ -102,7 +128,7 @@ double c16_pseudohash_legacy(char16 s) {
     for (int i = 15; i >= 0; i--) {
         mask = mask^(lsh32(mask,7)+rsh32(mask,3)+s[i]);
     }
-    return roundDigits(fract(sqrt((double)(abs(mask)))),13);
+    return roundDigits(fract(sqrt((double)(abs(mask)))));
 }
 
 char16 c8_as_c16(char8 c8) {
@@ -184,7 +210,7 @@ ulong l_randint(lrandom* lr, ulong min, ulong max) {
 }
 
 //Misc utility stuff
-text int_to_str(int x) {
+void int_to_str(text* t, int x) {
     // Get length
     int temp = x;
     int digits = 1;
@@ -192,13 +218,12 @@ text int_to_str(int x) {
         digits++;
         temp /= 10;
     }
-    text out;
     for (int i = digits-1; i >= 0; i--) {
-        out.str[i] = '0' + x%10;
+        t->str[t->len+i] = '0' + x%10;
         x/=10;
     }
-    out.len = digits;
-    return out;
+    t->len = t->len + digits;
+    return;
 }
 
 #define V_AT_LEAST(v1,v2,v3,v4) \
